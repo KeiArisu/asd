@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>用户列表</title>
+<link rel="stylesheet" href="../../layui/css/layui.css" media="all">
+</head>
+<body style="padding:10px;">
+
+	<div class="demoTable layui-form">
+	  昵称:
+	  <div class="layui-inline">
+	    <input class="layui-input" name="nick_name" id="nick_name" autocomplete="off">
+	  </div>
+	  状态:
+	  <div class="layui-inline">
+	    <select name="locked" id="locked">
+	    	<option value=" ">全部</option>
+	    	<option value="1">未锁定</option>
+	    	<option value="2">锁定</option>
+	    	<option value=" "></option>
+	    </select>
+	  </div>
+	  <button class="layui-btn" data-type="reload">搜索</button>
+	</div>
+	
+	<table class="layui-hide" id="test" lay-filter="test"></table>
+	 
+	<script type="text/html" id="toolbarDemo">
+   	 <div class="layui-btn-container">
+   		 <button class="layui-btn layui-btn-sm" lay-event="add">新增</button>
+   		 <button class="layui-btn layui-btn-danger layui-btn-sm" lay-event="delBatch">删除</button>
+	  </div>
+	</script>
+	<script type="text/html" id="barDemo">
+ 		 <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+		 <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+	</script>
+	<script src="../../layui/layui.js" charset="utf-8"></script>
+	<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+
+	<script>
+		layui.use(['table','form'], function() {
+			var table = layui.table;
+			var $=layui.jquery;
+			var form = layui.form;
+			table.render({
+				elem : '#test',
+				id:'user',
+				toolbar: '#toolbarDemo', //开启头部工具栏，并为其绑定左侧模板
+				url : '/user/findAll',
+				cols : [ [ {
+					type: 'checkbox', 
+					fixed: 'left'
+				}
+				,{
+					field : 'admin_user_id',
+					width : 150,
+					title : 'ID',
+					sort : true
+				}, {
+					field : 'login_user_name',
+					width : 300,
+					title : '用户名'
+				}, {
+					field : 'login_password',
+					width : 300,
+					title : '密码',
+				}, {
+					field : 'nick_name',
+					width : 473,
+					title : '昵称'
+				}, {
+					field : 'locked',
+					title : '状态',
+					width : 300
+				},{
+					fixed:'right',
+					title:'操作',
+					toolbar:'#barDemo',
+					width:300
+				} ] ],
+				page : true
+			   ,parseData: function(res){//将原始数据解析成table组件所规定的数据
+				   res.status=0;
+				   return{
+					   "code":res.status,//解析接口状态
+					   "msg":res.message,//解析提示文本
+					   "count":res.total,//解析数据长度
+					   "data":res.list//解析数据列表
+				   };
+			   }
+			});
+			 //监听行操作行点击事件
+			  table.on('tool(test)', function(obj){
+			    var data = obj.data;
+			    console.log(data)
+			    if(obj.event === 'del'){
+			      layer.confirm('真的删除行么', function(index){
+			    	  layer.close(index);
+			    	//将数据提交到后台
+			    	$.ajax({
+			    		url:"/user/delete",
+			    		data:{id:data.blog_id},
+			    		success:function(req){
+			    			if(req>0){
+			    				layer.alert("删除成功");
+			    				//刷新表格
+    		    				//执行重载
+   							table.reload('user')
+			    			}else{
+			    				layer.alert("删除失败");
+			    			}
+			    		}
+			    	});
+			       
+			      });
+			    } else if(obj.event === 'edit'){
+			    	//iframe层-父子操作
+			      layer.open({
+			    	  type:2,
+			    	  area:['700px','450px'],
+			    	  fixed:false,//不固定
+			    	  maxmin:true,
+			    	  content:'edit.html?id='+data.admin_user_id
+			      });
+			    }
+			  });
+			
+			//头工具栏事件
+			  table.on('toolbar(test)', function(obj){
+			    var checkStatus = table.checkStatus(obj.config.id);
+			    switch(obj.event){
+			      case 'add':
+			    	//iframe层-父子操作
+				      layer.open({
+				    	  type:2,
+				    	  area:['700px','450px'],
+				    	  fixed:false,//不固定
+				    	  maxmin:true,
+				    	  content:'add.html'
+				      });
+			      break;
+			      case 'delBatch':
+			        var data = checkStatus.data;
+			        if(data.length==0){
+			        	layer.msg('请选择要删除的数据');
+			        }else{
+			        	  layer.confirm('真的删除行么', function(index){
+					    	  layer.close(index);
+					    	  //删除数据逻辑
+					    	  //console.log(data);
+					    	  //获取要删除数据的id
+					    	  var ids=[];
+					    	  for(var i=0;i<data.length;i++){
+					    		  ids.push(data[i].admin_user_id);
+					    	  }
+					    	  $.ajax({
+					    		  url:"/user/deletes",
+					    		  data:{ids:ids},
+					    		  success:function(req){
+					    			  if(req>0){
+						    				layer.alert("删除成功");
+						    				//刷新表格
+			      		    				//执行重载
+			     							table.reload('user')
+						    			}else{
+						    				layer.alert("删除失败");
+						    			}
+					    		  }
+					    	  });
+			        	  });	
+			        }
+			      break;
+			    };
+			  });
+			
+			var active={
+				reload: function(){
+				      
+				      //执行重载
+				      table.reload('user', {
+				        page: {
+				          curr: 1 //重新从第 1 页开始
+				        }
+				        ,where: {
+				        	nick_name:$("#nick_name").val(),
+				        	locked:$("#locked").val()
+				        }
+				      }, 'data');
+				    }
+			};
+			
+			//搜索按钮的点击事件
+			  $('.demoTable .layui-btn').on('click', function(){
+				    var type = $(this).data('type');
+				    active[type] ? active[type].call(this) : '';
+				  });
+		});
+	</script>
+
+</body>
+</html>

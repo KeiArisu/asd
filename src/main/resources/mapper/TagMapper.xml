@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oxx.Blog.dao.TagMapper">
+	<select id="findAll" parameterType="tag" resultType="tag">
+		select * from tb_blog_tag
+		<where>
+			is_deleted !=1
+			<if test="tag_name!=null and tag_name!=''">
+				<bind name="tag_name" value="'%'+tag_name+'%'"/>
+					and tag_name like #{tag_name}
+			</if>
+			<if test="is_deleted!=null and is_deleted!=''">
+					and is_deleted like #{is_deleted}
+			</if>
+		</where>
+	</select>
+	
+	<select id="list"  resultType="tag">
+		select * from tb_blog_tag;
+	</select>
+	
+	<select id="findById" parameterType="int" resultType="tag">
+		select * from tb_blog_tag where tag_id=#{tag_id}
+	</select>
+	
+	<insert id="insert" parameterType="tag">
+	    insert into tb_blog_tag(tag_name,create_time) values(#{tag_name},#{create_time})
+	</insert>
+	
+	<update id="update" parameterType="tag">
+		update tb_blog_tag
+		set
+			<trim suffixOverrides=",">
+			   	 <if test="tag_name!=null and tag_name!=''">
+			   	 		tag_name=#{tag_name},
+			   	 </if>
+			   	 <if test="is_deleted!=null and is_deleted!=''">
+			   	 		is_deleted=#{is_deleted},
+			   	 </if>
+			   	 <if test="create_time!=null and create_time!=''">
+			   	 		create_time=#{create_time},
+			   	 </if>
+			</trim>
+			where tag_id=#{tag_id}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		delete from tb_blog_tag where tag_id=#{tag_id}
+	</delete>
+	
+	<delete id="deletes" parameterType="int">
+		delete from tb_blog_tag where tag_id in
+		<foreach collection="array" item="tag_id" open="(" separator="," close=")">
+			#{tag_id}
+		</foreach>
+	</delete>
+	
+	<select id="count" resultType="int">
+		select count(*) from tb_blog_tag where is_deleted !=1
+	</select>
+	
+	<update id="up" parameterType="int">
+			update tb_blog_tag
+			set
+			is_deleted= 1 
+			<where>
+			tag_id in
+				<foreach collection="array" item="ids" open="(" close=")" separator=",">
+					 #{ids}
+				</foreach>
+			</where>
+	</update>
+</mapper>

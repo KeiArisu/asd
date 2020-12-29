@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oxx.Blog.dao.UserMapper">
+	<select id="findUserById" parameterType="int" resultType="user">
+		select * from tb_admin_user where admin_user_id=#{admin_user_id}
+	</select>
+	<select id="findUserByUsernameAndPassword" resultType="user" parameterType="user">
+		select * from tb_admin_user where login_user_name=#{login_user_name} and login_password=#{login_password}
+	</select>
+	<select id="findAll" parameterType="user" resultType="user">
+		select * from tb_admin_user
+		<where>
+			<if test="nick_name!=null and nick_name!=''">
+				<bind name="nick_name" value="'%'+nick_name+'%'"/>
+					and nick_name like #{nick_name}
+			</if>
+			<if test="locked!=null and locked!=''">
+					and locked like #{locked}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findById" parameterType="int" resultType="user">
+		select * from tb_admin_user where admin_user_id=#{admin_user_id}
+	</select>
+	
+	<insert id="insert" parameterType="user">
+	     insert into tb_admin_user(login_user_name,login_password,nick_name,locked)values(#{login_user_name},#{login_password},#{nick_name},#{locked})
+	</insert>
+	
+	<update id="update" parameterType="int">
+		update tb_admin_user
+		set
+			<trim suffixOverrides=",">
+			   	 <if test="login_user_name!=null and login_user_name!=''">
+			   	 		login_user_name=#{login_user_name},
+			   	 </if>
+			   	 <if test="login_password!=null and login_password!=''">
+			   	 		login_password=#{login_password},
+			   	 </if>
+			   	 <if test="nick_name!=null and nick_name!=''">
+			   	 		nick_name=#{nick_name},
+			   	 </if>
+			   	 <if test="locked!=null and locked!=''">
+			   	 		locked=#{locked},
+			   	 </if>
+			</trim>
+			where admin_user_id=#{admin_user_id}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		delete from tb_admin_user where admin_user_id=#{admin_user_id}
+	</delete>
+	
+	<delete id="deletes" parameterType="int">
+		delete from tb_admin_user where admin_user_id in
+		<foreach collection="array" item="admin_user_id" open="(" separator="," close=")">
+			#{admin_user_id}
+		</foreach>
+	</delete>
+	
+	<update id="edits" parameterType="user">
+		update tb_admin_user set login_user_name=#{login_user_name},
+		nick_name=#{nick_name},locked=#{locked}
+		where admin_user_id=#{admin_user_id}
+	</update>
+	
+	<select id="list" parameterType="list" resultType="user">
+		select * from tb_admin_user where login_user_name=#{login_user_name} and login_password=#{login_password}
+	</select>
+	
+	<update id="edit" parameterType="user">
+		update tb_admin_user set login_password=#{login_password} where admin_user_id=#{admin_user_id}
+	</update>
+</mapper>

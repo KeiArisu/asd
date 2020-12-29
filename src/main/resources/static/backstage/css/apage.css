@@ -1,0 +1,169 @@
+@charset "UTF-8";
+body
+{
+	margin: 0;
+	padding: 0;
+}
+#box
+{
+	width:100%;
+	float:left;
+}
+#box #top
+{	
+	height:400px;
+	background-image:url(../../images/bgimg.jpg); /*背景图片*/
+	background-repeat: no-repeat; /*不平铺*/
+	background-size: cover;
+	/* background-size: cover;
+	-webkit-background-size: cover;
+	-o-background-size: cover;  自适应*/
+	color:white;
+}
+#box #top #topLeft
+{
+	font-weight:bold;
+	padding:10px;
+}
+#box #top #topCenter
+{
+	margin-top: 70px;
+	margin-left:400px;
+}
+#box #top #topCenter #blog_title
+{
+	font-weight:bold;
+	font-size:35px;
+	padding-bottom:20px;
+}
+#box #top #topCenter #topCenterB
+{
+	font-family:"Times New Roman",Times,Sans-serif;
+	font-style:italic;
+	padding-bottom:20px;
+}
+#box #top #topCenter #topCenterB div
+{
+	display:inline-block;
+}
+#box #top #topCenter .tags
+{
+	display:inline-block;
+	border:1px solid white;
+	padding:8px;
+	font-size:12px;
+	margin-left:5px;
+}
+#box #top #topRight
+{
+	position:fixed;
+	top:0;
+	right:0;
+}
+#box #top #topRight ul li
+{
+	padding-right:10px;
+}
+#box #top #topRight ul li a
+{
+	font-weight:bold;
+	text-decoration:none;
+	color:white;
+}
+#box #top #topRight ul li a:hover
+{
+	color:#a1c4fd;
+}
+
+#box #center
+{	
+	text-align:center;
+	width:1200px;
+	margin:0 auto;
+}
+#box #center #blog_show
+{
+	padding:30px auto;
+}
+
+#box #center #centerSm
+{
+	padding-top:50px;
+	padding-bottom:50px;
+}
+
+
+#box #center #bottom
+{	
+	margin-top:50px;
+	text-align: left;
+}
+#box #center #bottom #bottomA #bottomB img
+{
+	width: 40px;
+	height: 40px;
+	border-radius: 40px;
+	display: inline;
+	margin-left: 20px;
+}
+#box #center #bottom #bottomC
+{	
+	padding-bottom:20px;
+	text-align:center;
+}
+#box #center #bottom #bottomC h4
+{
+	text-align: left;
+	margin-left:100px;
+	margin-top:-25px;
+	padding-bottom:5px;
+}
+#box #center #bottom #bottomC p
+{
+	text-align: left;
+	margin-left:100px;
+	padding-bottom:10px;
+}
+#box #center #bottom #bottomC input
+{
+	width: 770px;
+	border: 1px solid black;
+	height: 50px;
+	border-radius: 25px;
+	padding-left:30px;
+}
+#box #center #bottom #bottomD
+{
+	text-align:center;
+	padding-top:50px;
+}
+#box #center #bottom #bottomD #bottomE
+{
+	padding-top:50px;
+}
+#box #center #bottom #bottomD #bottomE input
+{
+	width: 770px;
+	border: 1px solid black;
+	height: 30px;
+	margin:10px 0px;
+}
+#box #center #bottom #bottomD #bottomE textarea
+{
+	width: 770px;
+	border: 1px solid black;
+	height: 200px;
+	margin:10px 0px;	
+}
+#box #center #bottom #bottomD #bottomE button
+{
+	margin-left:450px;
+	display:block;
+}
+#box #center #bottom #bottomD #bottomE #canvas {
+	max-height: 30px;
+	width: 150px;
+	cursor: pointer;
+	box-sizing: border-box;
+	display:inline-block;
+}

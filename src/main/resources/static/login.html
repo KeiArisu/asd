@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link href="/layui/css/layui.css" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/iconfont.css" />
+<title>登陆页面</title>
+</head>
+<body>
+	<div id="bigBox">
+		<form class="layui-form login">	
+		<h1>LOGIN</h1>
+		<div class="inputBox">
+			<div class="inputText">
+				<span class="iconfont icon-yonghuming"></span>
+				<input type="text" name="" id="username" placeholder="りようしゃ" />
+			</div>
+			<div class="inputText">
+				<span class="iconfont icon-mima"></span>
+				<input type="password" name="" id="password" placeholder="パスワード" />
+			</div>
+			<div class="inputText">
+				<span class="iconfont icon-yanzhengma"></span>
+				<input type="text" name="vercode" id="LAY-user-login-vercode" lay-verify="required" placeholder="検証コード" />
+				<img src="/user/kaptcha" class="layadmin-user-login-codeimg" id="LAY-user-get-vercode" >			
+			</div>
+		</div>
+		<input class="loginButton" type="button" lay-submit="" lay-filter="LAY-user-login-submit" value="上陸" />
+		<input class="loginButton" type="button" id="qiantai" value="最初のページ" />
+		</form>
+	</div>	
+	<script type="text/javascript" src="/layui/layui.js"></script>
+	<script type="text/javascript">
+		layui.use([ 'jquery', 'form' ], function() {
+			var $ = layui.jquery;
+			var form = layui.form;
+
+			form.on('submit(LAY-user-login-submit)', function(data) {
+				console.log($("#LAY-user-login-vercode").val());
+				$.ajax({
+					url : "/user/login",
+					data :{
+						vercode:$("#LAY-user-login-vercode").val(),
+						login_user_name:$("#username").val(),
+						login_password:$("#password").val()
+						},
+					success : function(res) {
+						console.log(res);
+						if (res.code == -1) {
+							layer.alert(res.message);
+						}else{
+							layer.alert("登录成功",function(){
+								location.href = "myindex.html";
+							})
+						}
+					}
+				});
+				return false;
+			});
+			
+			$("#qiantai").on('click',function(){
+				location.href = "index.html";
+			});
+			
+			var url=window.location.search; 
+			if(url.indexOf("?")!=-1){
+			       var code = url.substr(url.indexOf("=")+1);
+			       if(code==-1){
+						layer.msg('用户未登录，请先登录后再访问其他资源！！！');
+			       }
+			}
+			
+			//自定义验证规则
+			form.verify({
+				username : [ /^[\S]{5,12}$/, '用户名必须5到12位，且不能出现空格' ],
+				pass : [ /^[\S]{6,12}$/, '密码必须6到12位，且不能出现空格' ]
+			});
+
+			//点击验证码更换验证码
+			$(document).on('click', '#LAY-user-get-vercode', function() {
+				var path = "/user/kaptcha?p=" + Math.random();
+				$("#LAY-user-get-vercode").attr("src", path);
+			});
+			
+			$(document).on('click', '.layadmin-user-jump-change', function() {
+				layer.msg("忘记密码请联系管理员！");
+			});
+			
+		});
+	</script>
+</body>
+</html>

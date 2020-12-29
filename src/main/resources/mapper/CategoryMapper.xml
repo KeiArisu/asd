@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oxx.Blog.dao.CategoryMapper">
+	<select id="findAll" parameterType="category" resultType="category">
+		select * from tb_blog_category
+		<where>
+			is_deleted !=1
+			<if test="category_name!=null and category_name!=''">
+				<bind name="category_name" value="'%'+category_name+'%'"/>
+					and category_name like #{category_name}
+			</if>
+			<if test="is_deleted!=null and is_deleted!=''">
+					and is_deleted like #{is_deleted}
+			</if>
+		</where>
+	</select>
+	
+	<select id="list"  resultType="category">
+		select * from tb_blog_category;
+	</select>
+	
+	<select id="findById" parameterType="int" resultType="category">
+		select * from tb_blog_category where category_id =#{category_id}
+	</select>
+	
+	<insert id="insert" parameterType="category">
+	   insert into tb_blog_category(category_name,category_icon) values(#{category_name},#{category_icon})
+	</insert>
+	
+	<update id="update" parameterType="category">
+		update tb_blog_category set category_name=#{category_name},category_icon=#{category_icon} where category_id=#{category_id}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		delete from tb_blog_category where category_id=#{category_id}
+	</delete>
+	
+	<delete id="deletes" parameterType="int">
+		delete from tb_blog_category where category_id in
+		<foreach collection="array" item="category_id" open="(" separator="," close=")">
+			#{category_id}
+		</foreach>
+	</delete>
+	
+	<select id="count" resultType="int">
+		select count(*) from tb_blog_category where is_deleted !=1
+	</select>
+	
+	<update id="up" parameterType="int">
+			update tb_blog_category
+			set
+			is_deleted= 1 
+			<where>
+			category_id in
+				<foreach collection="array" item="ids" open="(" close=")" separator=",">
+					 #{ids}
+				</foreach>
+			</where>
+	</update>
+</mapper>

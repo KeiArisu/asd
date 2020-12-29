@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>报表</title>
+<style type="text/css">
+</style>
+<script type="text/javascript" src="js/echarts.min.js"></script>
+<script type="text/javascript" src="layui/layui.js"></script>
+<script type="text/javascript">
+	layui.use(['jquery'],function(){
+		var $=layui.jquery;
+		
+		$.ajax({
+			url:"/blog/getBlogCountGroup",
+			success:function(res){
+				// 基于准备好的dom，初始化echarts实例
+				var mychar=echarts.init(document.getElementById('demo2'));
+
+			    // 指定图表的配置项和数据
+				var option={
+						title:{
+							text:"访问量前十的博客"
+						},
+				       xAxis: {
+			            },
+			            yAxis: {
+			            	type: 'category'
+			            }, 
+			            dataset: {
+			                // 这里指定了维度名的顺序，从而可以利用默认的维度到坐标轴的映射。
+			                // 如果不指定 dimensions，也可以通过指定 series.encode 完成映射，参见后文。
+			                dimensions: ['blog_title', 'blog_views'],
+			                source:res.data
+			            },
+			            series: [{
+			                type: 'bar',
+			                showBackground: true,
+			                backgroundStyle: {
+			                    color: 'rgba(220, 220, 220, 0.8)'
+			                } 
+			            }]
+				};
+		        // 使用刚指定的配置项和数据显示图表。
+		        mychar.setOption(option);
+			}
+		})
+		$.ajax({
+			url:"/blog/getBlogCountGroup",
+			success:function(res){
+				// 基于准备好的dom，初始化echarts实例
+				var mychar=echarts.init(document.getElementById('demo1'));
+				console.log(res);
+				
+				option = {
+					    title: {
+					        text: '博客在网站中的大致分类',
+					        left: 'center',
+					        top: 20,
+					        textStyle: {
+					            
+					        }
+					    },
+
+					    tooltip: {
+					        trigger: 'item',
+					        formatter: '{a} <br/>{b} : {c} ({d}%)'
+					    },
+
+					    visualMap: {
+					        show: false,
+					        min: 80,
+					        max: 600,
+					        inRange: {
+					            colorLightness: [0, 1]
+					        }
+					    },
+					    dataset: {
+			                // 这里指定了维度名的顺序，从而可以利用默认的维度到坐标轴的映射。
+			                // 如果不指定 dimensions，也可以通过指定 series.encode 完成映射，参见后文。
+			                dimensions: ['blog_category_name', 'blog_category_id'],
+			                source:res.data
+			            },
+					    series: [
+					        {
+					            name: '访问来源',
+					            type: 'pie',
+					            radius: '55%',
+					            center: ['50%', '50%'],
+					            roseType: 'radius',
+					            label: {
+					               
+					            },
+					            labelLine: {
+					                lineStyle: {
+					                    color: 'rgba(255, 255, 255, 0.3)'
+					                },
+					                smooth: 0.2,
+					                length: 10,
+					                length2: 20
+					            },
+					            itemStyle: {
+					                color: '#c23531',
+					                shadowBlur: 200,
+					                shadowColor: 'rgba(0, 0, 0, 0.5)'
+					            },
+
+					            animationType: 'scale',
+					            animationEasing: 'elasticOut',
+					            animationDelay: function (idx) {
+					                return Math.random() * 200;
+					            }
+					        }
+					    ]
+					};
+		        // 使用刚指定的配置项和数据显示图表。
+		        mychar.setOption(option);
+		        console.log(res)
+			}
+		})
+		
+	})
+	
+</script>
+</head>
+<body>
+	<div class="containee">
+		<div id="demo1" style="height: 500px; border: solid 2px #d4fc79; border-bottom:0px;" ></div>
+		<div id="demo2" style="height: 500px; border: solid 2px #d4fc79; border-top:0px;" ></div>
+	</div>
+</body>
+</html>

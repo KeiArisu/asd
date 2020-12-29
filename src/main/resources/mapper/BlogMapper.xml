@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oxx.Blog.dao.BlogMapper">
+	<select id="findAll" parameterType="blog" resultType="blog">
+		select * from tb_blog  
+		<where>
+			is_deleted != 1
+			<if test="blog_title!=null and blog_title!=''">
+				<bind name="blog_title" value="'%'+blog_title+'%'"/>
+					and blog_title like #{blog_title};
+			</if>
+		</where>
+	</select>
+	
+	<select id="lists"  resultType="blog">
+		select * from tb_blog where is_deleted != 1;
+	</select>
+	
+	<select id="findById" parameterType="int" resultType="blog">
+		select * from tb_blog where blog_id=#{blog_id}
+	</select>
+	
+	<select id="findByIds" parameterType="int" resultType="blog">
+		select * from tb_blog where blog_id=#{blog_id}
+	</select>
+	
+	<update id="edit_blog_views" parameterType="blog">
+		update tb_blog set blog_views = #{blog_views}  where blog_id = #{blog_id}
+	</update>
+	<update id="update" parameterType="blog">
+		update tb_blog set blog_title=#{blog_title},blog_sub_url=#{blog_sub_url},blog_cover_image=#{blog_cover_image},blog_content=#{blog_content},blog_category_id=#{blog_category_id},blog_category_name=(select category_name from tb_blog_category where category_id=#{blog_category_id}),blog_tags=#{blog_tags},blog_status=#{blog_status},enable_comment=#{enable_comment},update_time=#{update_time} where blog_id=#{blog_id}
+	</update>
+	
+	<select id="findAllByDate" resultType="blog">
+		select * from tb_blog  where is_deleted != 1 order by create_time desc 
+	</select>
+	
+	<delete id="delete" parameterType="int">
+		delete from tb_blog where blog_id=#{blog_id}
+	</delete>
+	
+	<delete id="deletes" parameterType="int">
+		delete from tb_blog where blog_id in
+		<foreach collection="array" item="blog_id" open="(" separator="," close=")">
+			#{blog_id}
+		</foreach>
+	</delete>
+	<select id="count" resultType="int">
+		select count(*) from tb_blog where is_deleted !=1
+	</select>
+	
+	<update id="up" parameterType="int">
+			update tb_blog
+			set
+			is_deleted= 1 
+			<where>
+			blog_id in
+				<foreach collection="array" item="ids" open="(" close=")" separator=",">
+					 #{ids}
+				</foreach>
+			</where>
+	</update>
+	
+	<select id="list"  parameterType="blog" resultType="blog">
+		select * from tb_blog
+		<where>
+			is_deleted !=1 
+			<if test="blog_title!=null and blog_title!=''">
+				<bind name="blog_title" value="'%'+blog_title+'%'"/>
+					and blog_title like #{blog_title}
+			</if>
+		</where>
+	</select>
+	
+	<select id="comment" resultType="blog">
+		select * from tb_blog_comment a,tb_blog b where a.blog_id=b.blog_id and a.blog_id=#{blog_id}
+	</select>
+	
+	<select id="getBlogCountGroup"  resultType="blog">
+		select * from tb_blog where is_deleted !=1 order by blog_views desc
+	</select>
+	
+	<insert id="insert" parameterType="blog">
+		insert into tb_blog(blog_title,blog_sub_url,blog_cover_image,blog_category_id,blog_category_name,blog_content,blog_tags,blog_status,enable_comment,create_time,update_time) values(#{blog_title},#{blog_sub_url},#{blog_cover_image},#{blog_category_id},(select category_name from tb_blog_category where category_id=#{blog_category_id}),#{blog_content},#{blog_tags},#{blog_status},#{enable_comment},#{create_time},#{update_time})
+	</insert>
+	
+	<select id="dim" resultType="blog">
+		select * from tb_blog where blog_title like '%${blog_title}%' or blog_category_name like '%${blog_category_name}%'
+	</select>
+	
+	<select id="countByStatus" resultType="int">
+		select count(*) from tb_blog  where is_deleted != 1 and blog_status != 0
+	</select>
+</mapper>

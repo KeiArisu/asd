@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oxx.Blog.dao.CommentMapper">
+	<select id="findAll" parameterType="comment" resultType="comment">
+		select * from tb_blog_comment
+		<where>
+			is_deleted !=1
+			<if test="commentator!=null and commentator!=''">
+				<bind name="commentator" value="'%'+commentator+'%'"/>
+					and commentator like #{commentator}
+			</if>
+			<if test="comment_status!=null and comment_status!=''">
+					and comment_status like #{comment_status}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findById" parameterType="int" resultType="comment">
+		select * from tb_blog_comment where comment_id=#{comment_id}
+	</select>
+	
+	<select id="list_comment" resultType="comment">
+		select * from tb_blog_comment where comment_id = #{comment_id} and comment_status != 0
+	</select>
+	
+	<insert id="insert" parameterType="comment">
+	insert into tb_blog_comment(
+			<if test="website_url!='' and website_url!=null">
+				website_url,
+			</if>
+		blog_id,commentator,email,comment_body)values(
+			<if test="website_url!='' and website_url!=null">
+				#{website_url},
+			</if>
+		#{blog_id},#{commentator},#{email},#{comment_body}
+		)
+	   <!--   insert into tb_blog_comment(blog_id,commentator,email,website_url,comment_body,comment_create_time,commentator_ip,reply_body,reply_create_time,comment_status,is_deleted)values(#{blog_id},#{commentator},#{email},#{website_url},#{comment_body},#{comment_create_time},#{commentator_ip},#{reply_body},#{reply_create_time},#{comment_status},#{is_deleted})
+	 --></insert>
+	
+	<update id="update" parameterType="int">
+		update tb_blog_comment
+		set
+			<trim suffixOverrides=",">
+			   	 <if test="blog_id!=null and blog_id!=''">
+			   	 		blog_id=#{blog_id},
+			   	 </if>
+			   	 <if test="commentator!=null and commentator!=''">
+			   	 		commentator=#{commentator},
+			   	 </if>
+			   	 <if test="email!=null and email!=''">
+			   	 		email=#{email},
+			   	 </if>
+			   	 <if test="website_url!=null and website_url!=''">
+			   	 		website_url=#{website_url},
+			   	 </if> 
+			   	 <if test="comment_body!=null and comment_body!=''">
+			   	 		comment_body=#{comment_body},
+			   	 </if>
+			   	 <if test="comment_create_time!=null and comment_create_time!=''">
+			   	 		comment_create_time=#{comment_create_time},
+			   	 </if>
+			   	 <if test="commentator_ip!=null and commentator_ip!=''">
+			   	 		commentator_ip=#{commentator_ip},
+			   	 </if>
+			   	 <if test="reply_body!=null and reply_body!=''">
+			   	 		reply_body=#{reply_body},
+			   	 </if>
+			   	  <if test="reply_create_time!=null and reply_create_time!=''">
+			   	 		reply_create_time=#{reply_create_time},
+			   	 </if>
+			   	 <if test="comment_status!=null and comment_status!=''">
+			   	 		comment_status=#{comment_status},
+			   	 </if>
+			   	 <if test="is_deleted!=null and is_deleted!=''">
+			   	 		is_deleted=#{is_deleted},
+			   	 </if>
+			</trim>
+			where comment_id=#{comment_id}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		delete from tb_blog_comment where comment_id=#{comment_id}
+	</delete>
+	
+	<delete id="deletes" parameterType="int">
+		delete from tb_blog_comment where comment_id in
+		<foreach collection="array" item="comment_id" open="(" separator="," close=")">
+			#{comment_id}
+		</foreach>
+	</delete>
+	
+	<select id="count" resultType="int">
+		select count(*) from tb_blog_comment where is_deleted !=1
+	</select>
+	
+	<update id="up" parameterType="int">
+			update tb_blog_comment
+			set
+			is_deleted= 1 
+			<where>
+			comment_id in
+				<foreach collection="array" item="ids" open="(" close=")" separator=",">
+					 #{ids}
+				</foreach>
+			</where>
+	</update>
+	
+	<update id="audit" parameterType="int">
+			update tb_blog_comment
+			set
+			comment_status= 1 
+			<where>
+			comment_id in
+				<foreach collection="array" item="ids" open="(" close=")" separator=",">
+					 #{ids}
+				</foreach>
+			</where>
+	</update>
+	
+	<update id="edit" parameterType="comment">
+		update tb_blog_comment set reply_body = #{reply_body} where comment_id = #{comment_id}
+	</update>
+	
+	<select id="countByBlogId" resultType="int" parameterType="int">
+		select count(*) from tb_blog_comment where is_deleted !=1 and blog_id=#{blog_id}
+	</select>
+	
+	<select id="findByBlogId" resultType="comment">
+		select * from tb_blog_comment where is_deleted !=1 and comment_status = 1 and blog_id=#{blog_id}
+	</select>
+	
+</mapper>
